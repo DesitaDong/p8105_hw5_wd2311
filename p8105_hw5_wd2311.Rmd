@@ -33,3 +33,55 @@ set.seed(1)
 
 
 # Problem 1
+
+## Define birthday-checking function
+```{r}
+bday_sim = function(n_room) {
+  birthdays = sample(1:365, n_room, replace = TRUE)
+repeated_bday = length(unique(birthdays)) < n_room
+repeated_bday
+}
+
+bday_sim(20)
+```
+
+## 10000 simulation runs
+```{r}
+bday_sim_results = 
+  expand_grid(
+    bdays = 2:50,
+    iter = 1:10000
+  ) |> 
+  mutate(
+    result = map_lgl(bdays, bday_sim)
+  ) |> 
+  group_by(bdays) |> 
+  summarize(
+    prob_repeat = mean(result)
+  )
+```
+
+## Plot the function
+```{r}
+bday_sim_results |> 
+  ggplot(aes(x = bdays, y = prob_repeat)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    x = "Group Size", 
+    y = "Probability",
+    title = "Probability of Sharing Birthday for Increasing Group Size"
+  )
+```
+
+The probability is very small for small groups, but it rises quickly as group size increases.
+Around 23 people, the probability is already about 0.5—there’s roughly a 50% chance that at least two people share a birthday.By about 40–50 people, the probability is above 90%, approaching 1 as the group grows.
+This is the classic birthday paradox. Even though there are 365 possible birthdays, we don’t need anything close to 365 people before a match becomes very likely. The curve’s steep, nonlinear rise shows how quickly shared birthdays become almost guaranteed as the group size increases.
+
+
+
+
+
+
+
+
